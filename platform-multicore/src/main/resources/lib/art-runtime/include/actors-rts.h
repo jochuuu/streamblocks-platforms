@@ -559,7 +559,7 @@ extern unsigned int timestamp();
 
 #ifdef TRACE
 #define ART_CONDITION_ENTER(name, index)   \
- //unsigned int __timestamp = timestamp(); \
+ //unsigned int __timestamp = timestamp();
 
 #elif defined(TRACE_TURNUS)
 #define ART_CONDITION_ENTER(name, index)        \

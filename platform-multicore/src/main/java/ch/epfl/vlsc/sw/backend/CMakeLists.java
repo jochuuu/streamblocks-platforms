@@ -222,8 +222,12 @@ public interface CMakeLists {
             boolean hasPlink =
                     backend().context().getConfiguration().isDefined(PlatformSettings.PartitionNetwork) &&
                             backend().context().getConfiguration().get(PlatformSettings.PartitionNetwork);
-
-            // -- Target link libraries
+	    // -- Include SDL2 
+	    emitter().emit("# -- Include SDL2");
+	    emitter().emit("find_package(SDL2 REQUIRED)");
+	    emitter().emit("message(STATUS \"extra_libraries = ${extra_libraries}\")");
+            
+	    // -- Target link libraries
             emitter().emit("# -- Target link libraries");
             emitter().emit("target_link_libraries(%s art-genomic art-native art-runtime %s ${extra_libraries})",
                     backend().task().getIdentifier().getLast().toString(),

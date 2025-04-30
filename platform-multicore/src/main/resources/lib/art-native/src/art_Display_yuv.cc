@@ -37,7 +37,7 @@
 
 #include <stdlib.h>
 #include <time.h>
-#include <sys/timeb.h>
+#include <sys/time.h>
 
 #include "actors-rts.h"
 #include "display.h"
@@ -115,21 +115,23 @@ ART_ACTION_SCHEDULER(art_Display_yuv_action_scheduler) {
 static void art_Display_yuv_constructor(AbstractActorInstance *pBase) {
     ActorInstance_art_Display_yuv *thisActor =
             (ActorInstance_art_Display_yuv *) pBase;
-    struct timeb tb;
+    struct timeval tv;
     int width = thisActor->width;
     int height = thisActor->height;
 
     if (width == 0 || height == 0) {
         runtimeError(pBase, "Width and/or height parameter not set\n");
     }
-    ftime(&tb);
+
+    gettimeofday(&tv, NULL);
     memset(thisActor->macroBlock, 0, MB_SIZE);
     thisActor->mbx = 0;
     thisActor->mby = 0;
     thisActor->count = 0;
 
-    thisActor->startTime = tb.time * 1000 + tb.millitm;
+    thisActor->startTime = tv.tv_sec * 1000 + tv.tv_usec / 1000;
     thisActor->totFrames = 0;
+
     if (allocate_display(thisActor->width, thisActor->height, thisActor->title,
                          &thisActor->frameBuffer)) {
         exit(1);
@@ -139,10 +141,11 @@ static void art_Display_yuv_constructor(AbstractActorInstance *pBase) {
 void art_Display_yuv_destructor(AbstractActorInstance *pBase) {
     ActorInstance_art_Display_yuv *thisActor =
             (ActorInstance_art_Display_yuv *) pBase;
-    struct timeb tb;
+    struct timeval tv;
     int totTime;
-    ftime(&tb);
-    totTime = tb.time * 1000 + tb.millitm - thisActor->startTime;
+    gettimeofday(&tv, NULL);
+    totTime = tv.tv_sec * 1000 + tv.tv_usec / 1000 - thisActor->startTime;
+
     printf("%d total frames in %f seconds (%f fps)\n", thisActor->totFrames,
            (double) totTime / 1000,
            (double) (thisActor->totFrames) * 1000 / totTime);
